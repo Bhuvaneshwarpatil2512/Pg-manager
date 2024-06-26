@@ -1,0 +1,1041 @@
+creating form{Google form} using node.js
+inatll packages such as:
+ npm install
+ npm i express
+ npm i  mongoose
+ nodemon app.js
+
+ We have to connect app.js to basic.routes and routes should be connected to controller
+BasicController
+ app.js---->BasicRouter-->BasicController
+
+step 1: in that we have app.js file
+        Allow all file of in app.js
+        const express = require('express')
+        const mongoose = require('mongoose');
+        
+        define the port number 
+        app.listen(PORT,()=>{
+        console.log('db connected')
+        console.log('srver is running on port', PORT);
+
+step 2: create a folder for Router and create file basic.router.js
+
+        in basic.router.js
+        const BasicRouter = require("express").Router();
+        its form connecting Basicrouter in app.js express.
+        BasicRouter.get('/',);
+        now we have created route for controller
+
+        const userModel = require("../model/basic.model")
+
+        const BasicController ={
+           homePage(request, response){
+           response.render("dashboard");
+        }
+        module.exports =BasicController;
+
+        Now we are calling {dashboard} its an pug file where we convert html code to pug we will learing in next step
+        
+step 3: Install pug now 
+        npm pug 
+        
+        create a view folder in that create dashboard.pug file
+        {dashboard.pug}
+
+step 4: Now from Express render engin web site set ${views} is app.js
+        app.set('views', './views')
+        app.set('view engine', 'pug')
+
+        now pug view engin 
+
+step 5: link the BasicController function object name homePage to BasicRouter in basic.router file
+        BasicRouter.get('/',BasicController.homePage);
+
+        Linking BasicRouter to app.js file
+        app.us('/',BasicRouter)
+
+        In express Post method in unavalable so for enableing it we us
+        app.use(express.js)
+        app.use(express.urlencoded({extended:false}))
+
+        Installing mongoose in app.js
+        Calling mongoose so we can see that its running
+        mongoose.connect(URI).then(()=>{
+            app.listen(PORT,()=>{
+            console.log('db connected')
+            console.log('srver is running on port', PORT);
+        })
+     }).catch(()=>{
+        process.exit(1);
+     })
+     mongoose.connect(URI).then(()=>{}) --> this meyhod link the mongoose to our local host
+     const URI = `mongodb://localhost:27017/product-mang`
+     URI will connect our mongodb compass to app.js first the link/name of database
+
+step 6: now for the login.pug and new_registration.pug file we have to create one linking between BasicController like for dashboard page 
+       const BasicController ={
+        homePage(request, response){
+        response.render("dashboard");
+       },
+       loginPage(request,response){
+        response.render("login");
+       },
+       registrationPage(request,response){
+        response.render("new_redistration");
+       },
+};
+
+--> Now in BasicRouter link all the pug file that we have linked in controller
+    BasicRouter.get('/',BasicController.homePage);
+    BasicRouter.get('/login',BasicController.loginPage);
+    BasicRouter.get('/new-registration',BasicController.registrationPage);
+
+step 7: new_redistration
+      
+       doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN", crossorigin="anonymous")
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js", integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL", crossorigin="anonymous")
+        title new
+    body 
+      section.container-fulid 
+        section.row  
+          section.col-4.m-auto.card.mt-4
+           p.mb-0.text-center.h4.mt-2.text.primary User Registration
+           if(message !== "")
+            #message 
+              .alert.alert-primary(role="alert") #{message}
+            script. 
+              let message = "#{messgae}";
+                if(message !== ""){
+                    setTimeout(()=>{
+                      document.querySelector('#message').innerHTML = ""
+                    },3000)
+                }
+           p.mb-0.text-center.h4.mt-2.text-primary user Registration 
+            form(action="/save-user" method="post")
+                .mb-3
+                label.form-label(name="fullName" for="fullName") Full Name
+                input.form-control#fullname(type="text", placeholder="Fullname" required)
+                .mb-3
+                label.form-label(name="Mobile" for="Enter Moblie") Mobile
+                input.form-control#mobile(type="text", placeholder="Number" required)
+                .mb-3
+                label.form-label(name="Email" for="email") Email
+                input.form-control#email(type="text", placeholder="Email" required)
+                .mb-3
+                label.form-label(name="Password" for="password") Password
+                input.form-control#password(type="text", placeholder="Password" required)
+                .mb-3
+                label.form-label(name="cPassword" for="confirmPassword") Confirm Password
+                input.form-control#confirmPassword(type="text", placeholder="Password" required)
+                .mb-3.text-center
+                button(type="submit").btn.btn-success.btn-sm save 
+                button(type="reset").ms-2.btn.btn-outline-danger Reset 
+
+        In form(action="/save-user" method="post")
+        in that we have action that is method to defi=ine ferther action method is post mrthod.
+
+        link the save-user in BasicRouter
+        BasicRouter.post('/save-user)
+
+       link data in BasicController so that it will call data 
+        saveUser(req, res){
+        let data = request.body;
+        response.send({
+            status: true,
+            data,
+        })
+    }
+
+step 8:  create model folder and in that create a basic.model.js file
+         and add mongoose in that 
+         const mongoose = require('mongoose')
+
+         After that create Schema 
+         const UserSchema = new mongoose.Schema({
+                name:{type:String},
+                password:{type:String},
+                mobile:{type:String},
+                email:{type:String},
+                });
+
+        crate model
+        const UserModel = mongoose.model("user", UserSchema, "useres");
+                                         (name,Schema,Controller-name)
+        export that user model
+        module.exports = userModel
+
+        After in controller cahnge the code of saveUser we where first Fatching data and finding that data is going to data base or not.
+
+        In controller in save user rewrite the Schema code and assign them with data.
+        In that Usermodel is the name of the basic.model.js file 
+
+        saveUser(request, response){
+        let data =request.body;
+
+        let newUser = UserModel({
+        name: data.fullname,
+        password: data.password,
+        mobile: data.mobile,
+        email: data.eamil,
+        });
+     }
+
+step 9 : There are some changes in controller code now
+
+async saveUser(request, response){
+        let data =request.body;
+ try{
+    let newUser = UserModel({
+        name: data.fullname,
+        password: data.password,
+        mobile: data.mobile,
+        email: data.email,
+        });
+        let result = await newUser.save();
+        if(result){
+            response.send({
+                status:true,
+                message: "user Register"
+            })
+        }
+        else{
+            response.send({
+                status:false,
+                message: "!404",
+            })
+        }
+     } catch(error){
+        response.send({
+            status:false,
+            message: "!404",
+        });
+     }
+ }
+};
+
+assign a promice function to saveUser and {newuser} have the parameters of (UserModel){Schema} and the result should have {newUser}
+and at last use try anf if else to check its running and registration done or not;
+
+step 10: section is  object is a cashe 
+         insatll express session command is : npm install express-session
+
+         After that call session in app.js
+         var session = require('express-session')
+
+         copy session code from express session we site and paste in app.js
+         app.use(
+                session({
+                secret: 'yash',
+                resave: false,
+                saveUninitialized: true,
+                cookie: { secure: true }
+         })
+        );
+         
+         we have secret key which is used for encryption 
+
+         Now some cahnge in ontroller in saveUser
+          async saveUser(request, response){
+        let data =request.body;
+        try{
+            let newUser = userModel({
+                name: data.fullname,
+                password: data.password,
+                mobile: data.mobile,
+                email: data.email,
+                });
+                let result = await newUser.save();
+                if(result){
+                    request.session.message =
+                    "user register Done _/",
+                }
+                else{
+                    request.session.message =
+                    "user register Not Done /\,
+                }
+            }catch(error){
+                request.session.message =
+                "!404",
+            }
+            response.send({satua: true, message: request.session.message});
+        }      
+};
+
+ At if else try catch block we have added session code 
+ request.session.message 
+ 
+ In registerationPage in controller we have some changes
+ response add some code give below
+
+      registrationPage(request,response){
+        let message =
+        request.session.message !== undefined ? request.session.message :"";
+        delete request.session.message;
+        response.render("new_redistration", {
+            message: message,
+        });
+    },
+
+Now in new_redistration.pug file 
+ 
+ add script tag on top of it puh code
+    body 
+        section.container-fulid 
+          section.row  
+            section.col-4.m-auto.card.mt-4
+              if(message !=="")
+                #message
+                .alert.alert-primary(role="alert") #{message}
+                script. 
+                  let message = "#{message}";
+                  if(message !==""){
+                    setTimeout(()=>{
+                      document.quearySelector('#message').innerHTML =""
+                    },2000)
+                  }
+
+this operation is for {registration done succes} message this message will be shoned for 2 secand.
+
+and in app.js we have to romove this code
+ //cookie: { secure: true } from session code
+
+step 11: Now we have to check that if User exist in our system for we have to do some changes in {saveUser} function
+        async saveUser(request, response){
+        let data =request.body;
+        try{
+            let newUser = userModel({
+                name: data.fullname,
+                password: data.password,
+                mobile: data.mobile,
+                email: data.email,
+                });
+                let isUserExist = await userModel.find({email:{$regex:"^" + email+"$", $options: 'i' }})
+                if(isUserExist){
+                    request.session.message ="User Exist"
+                }else{
+                let result = await newUser.save();
+                if(result){
+                    request.session.message ="Resigtration Done"
+                }
+                else{
+                    request.session.message = "Not Done "
+                }
+                }
+                response.redirect("/new-registration");
+            }catch(error){
+                request.session.message= "404"
+                response.redirect("/new-registration");
+            }
+            
+        }, {main part is isUserExist} function
+         
+
+
+step 12: now we have to remove same users why we do is bacause of development purpose
+         In routers
+         BasicRouter.post('/remove-user',BasicController.removeUser);
+         In controller
+         registrationPage(request,response){
+        let message =
+        request.session.message !== undefined ? request.session.message :"";
+        delete request.session.message;
+        response.render("new_redistration", {
+            message: message,
+            newUser: {...request.session.newUser},
+        });
+    },
+    async saveUser(request, response){
+        let data =request.body;
+        try{
+            let newUser = userModel({
+                name: data.fullname,
+                password: data.password,
+                mobile: data.mobile,
+                email: data.email,
+                });
+                let isUserExist = await userModel.findOne({
+                    email: { $regex:"^" + data.email + "$", $options: "i" },
+            });
+                if(isUserExist){
+                    request.session.message ="User Exist"
+                    request.session.newUser = {...data};
+                }else{
+                let result = await newUser.save();
+                if(result){
+                    request.session.message ="Resigtration Done"
+                    request.session.newUser = {};
+                }
+                else{
+                    request.session.message = "Not Done "
+                    request.session.newUser = {...data};
+                }
+                }
+            response.redirect("/new-registration");
+            }catch(error){
+                request.session.message= "404"
+                request.session.newUser = {...data};
+                response.redirect("/new-registration");
+                
+            }
+            
+        },     
+        async removeUser(request, response){
+            let result= await userModel.deleteMany({});
+             response.json({
+                satus:true,
+                result,
+             })
+        }
+
+        We have changed some of the code and same code we have domne some work for just changing the  Email and rest should be same 
+        In new-new_redistration.pug file in input at the end we have added some values such as 
+        values=newUser.fullName
+        its used because of not to cahnge the name just to change the email id and user can login
+
+step 12: User login
+       login.pug
+       doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN", crossorigin="anonymous")
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js", integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL", crossorigin="anonymous")
+        title new
+    body 
+        section.container-fulid 
+          section.row  
+            section.col-4.m-auto.card.mt-4
+              if(message !=="")
+                #message
+                .alert.alert-primary(role="alert") #{message}
+                script. 
+                  let message = "#{message}";
+                  if(message !==""){
+                    setTimeout(()=>{
+                      document.queryselector('#message').innerHTML ="";
+                    },2000)
+                  }
+            p.mb-0.text-center.h4.mt-2.text-primary User Registration 
+              form(action="/user-login" method="post")
+                  .mb-3
+                  label.form-label(for="email") Email
+                  input.form-control#email(name="email" type="email", placeholder="Email" required value="")
+                  .mb-3
+                  label.form-label(for="password") Password
+                  input.form-control#password(name="password" type="text", placeholder="Password" required value="")
+                  .mb-3.text-center
+                  button(type="submit").btn.btn-success.btn-sm Login
+                  button(type="reset").ms-2.btn.btn-outline-danger Reset 
+                  .mb-3.text-center
+                    p
+                      | Don not have Account 
+                      a.mx-2(href="/new-registration") here
+                      |to Registration.
+
+        Now we have use action user-login in form so we have to create a route for that 
+
+        In routes
+        BasicRouter.post('/user-login',BasicController.userLogin)
+
+        In controller
+        const { request, response } = require("express");
+const userModel = require("../model/basic.model")
+
+const BasicController ={
+    homePage(request, response){
+        if(request.session.login === undefine){
+            response.redirect("/login")
+            return false;
+        }
+        response.render("dashboard");
+
+    },
+    loginPage(request,response){
+        if(request.session.login !== undefined){
+            response.redirect("/")
+            return false;
+        }
+        let message =
+        request.session.message !== undefined ? request.session.message :"";
+        delete request.session.message;
+        response.render("login", {
+            message: message,
+        });
+    },
+    registrationPage(request,response){
+        if(request.session.login !== undefine){
+            response.redirect("/")
+            return false;
+        }
+        let message =
+        request.session.message !== undefined ? request.session.message :"";
+        delete request.session.message;
+        response.render("new_redistration", {
+            message: message,
+            newUser: {...request.session.newUser},
+        });
+    },
+    async saveUser(request, response){
+        let data =request.body;
+        try{
+            let newUser = userModel({
+                name: data.fullname,
+                password: data.password,
+                mobile: data.mobile,
+                email: data.email,
+                });
+                let isUserExist = await userModel.findOne({
+                    email: { $regex:"^" + data.email + "$", $options: "i" },
+            });
+                if(isUserExist){
+                    request.session.message ="User Exist"
+                    request.session.newUser = {...data};
+                }else{
+                let result = await newUser.save();
+                if(result){
+                    request.session.message ="Resigtration Done, Please Login Now"
+                    request.session.newUser = {};
+                    response.redirect("/login");
+                }
+                else{
+                    request.session.message = "Not Done "
+                    request.session.newUser = {...data};
+                    response.redirect("/new-registration");
+                }
+                }
+           
+            }catch(error){
+                request.session.message= "404"
+                request.session.newUser = {...data};
+                response.redirect("/new-registration");
+                
+            }
+            
+        },     
+        async removeUser(request, response){
+            let result= await userModel.deleteMany({});
+             response.json({
+                satus:true,
+                result,
+             })
+        },
+        async userLogin(request, response){
+            let data = request.body;
+            try {
+                 let user = userModel.findOne({
+                    email:{$regex:`^${data.email}$`,$options: "i"},
+                    pasword:data.password
+                },
+                {pasword: 0}
+                );
+                if(user){
+                    request.session.login = { user} ;
+                    response.redirect('/dashboard');
+                }else{
+                    request.session.message = "Username or password is wrong"
+                    response.redirect('/login'); 
+                }
+                
+            } catch (error) {
+                request.session.message = "404"
+                    response.redirect('/login'); 
+            }
+           
+        },
+};
+
+module.exports =BasicController;
+
+we have changed some code to makelogin accurate which means that we have changed redirction frpm registration to login to dashboard 
+
+step 13: dashBoard 
+        Now we will login and it will redirect me to dashboard the main tab
+
+        before that wehave to create dashboard.pug file
+        doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Document
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN", crossorigin="anonymous")
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js", integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL", crossorigin="anonymous")
+    body 
+      section.container-fluid 
+        section.row.bordered-bottom.bordered-2 
+         section.col-11.m-auto.d-flex.justify.content-between.py-2
+           p.h4.mb-0 welcome #{JSON.stringfy(login.user.name.split(' ')[0])}
+           a.btn.btn-danger.btn-sm(href='/logout') Logout 
+        
+        As we can see that in line 574 we have welcome and rest is function to call the user first name
+        In controller do some changes for it
+        const BasicController ={
+    homePage(request, response){
+        if(request.session.login === undefined){
+            response.redirect("/login")
+            return false;
+        }
+        response.render("dashboard",{
+            login: request.session.login,
+        });
+    },
+
+step 13 : install multer from npm is for file uploading  its an library for file uploading
+
+        in App.js add strick model
+        app.use(express.static("public"));
+
+        now in model create a file called product.model.js
+
+        In that we will create Schems for product that we have to add
+
+        --> product.model.js
+        const mongoose = require("mongoose") 
+        const ProductSchema = new mongoose.Schema({
+            productName: {type:String},
+            qty: { type: Number},
+            price: {type: Number},
+            mangData: {type: String},
+
+        });
+
+        const ProductModel = mongoose.model("product", ProductSchema, "products");
+        module.exports = ProductModel;
+
+step 14: In routers create route for the function
+         BasicRouter.post('/api/save-new-product',upload.none(),BasicController.saveProduct ); --> upload.non() on time property
+
+         In controller crate a contol for the function
+                 async saveProduct(request, response){
+            // One way to write or fetch data from user
+            // let data = request.data;
+            // ProductModel({
+            //     productName:data.productName,
+            //     qty: data. qty,
+            //     price: data.price,
+            //     mangData: data.mangData,
+            // })
+
+            // second way
+            let { productName, qty, price, mangDate } = request.body; --> All the name that we have taken is form Schema in product.model.js
+            let newProduct = new ProductModel({
+                productName, 
+                qty, 
+                price, 
+                mangDate
+            });
+            let result = await newProduct.save();
+            
+            try {
+                if(result){
+                    response.json({status: true, message:"Product saved"});
+                }
+                else{
+                    response.json({status: false, message:"product nOt save try again"})
+                }
+            } catch (error) {
+                response.json({status: false, message:"Server error 404!"})
+            }
+        },
+
+        //Test your Api in postman so that we can check is working or not if its working lets move to another step
+
+step 15: --> get data from database that we have tested
+ async getProduct(request, response){
+            try {
+                let result = await ProductModel.find();
+                response.json({status: true, result});
+            } catch (error) {
+                response.json({status: false, message:"Server error 404!"})
+            }
+        },
+
+        crate a new file  in punlil/js called product.clinet.js
+        -->product.client.js 
+           This file will fetch data on our dashboard
+
+           window.addEventListener("load",()=>{
+            function getProductDetail(){
+                let url = `localhost:3031/api/get-product`;
+                fetch(url,{method:"GET"});
+            }
+            getProductDetail()
+           }
+
+           BY using this we will get all the pastmen tested Api data on our dashboard
+
+step 16: now we want to add delete button create button in dashBoard,pug file in form
+         After that in -->product.client.js 
+
+         Before that we have some changes in code
+
+    
+window.addEventListener("load",()=>{
+
+            let list = [];
+            let tbody = document.querySelector('#body');
+            let saveNewProductBtn = document.querySelector('#saveNewProductBtn')
+
+            let response = async function getProductDetail(){ --> get the Product Detail
+            let url = `localhost:3031/api/get-product`; --> url that is connected with router
+            let response = await fetch(url,{method:"GET"}); --> fetching the data
+            let data = await response.json(); --> in json format
+            if(data.status === true){ --> if data is there
+            list= data.result; --> print the data in empty list that we have created
+            printData(list); --> print list
+            }else{
+                alert(data.message); --> shoe data message
+            }
+        }
+
+        function printData(list){ --> now that Print list function
+            tbody.innerHTML = list -->tbody in that innerHTML will be list and will be map one by one
+            .map((product,index)=>{
+                return `<tr>
+                        <th scope="row">${index+1}</th>
+                        <td>${product.productName}</td>
+                        <td>RS ${product.price}</td>
+                        <td>${product.qty} units</td>
+                        <td><button data-remove-id="${product_id}"
+                        class="remove" btn.btn-danger btn-sm">DEL</button></td>
+                    </tr>`
+            })
+            .join("");
+
+        }
+})
+
+tep 17: changes in dashborad
+
+      --> dashBoard.pug
+      doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Dashboard
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN", crossorigin="anonymous")
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js", integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL", crossorigin="anonymous")
+        script(src="/js/product.client.js") 
+    body 
+      section.container-fluid 
+         .modal.fade(tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false") #addNewProduct
+         .modal-dialog
+            .modal-content
+               .modal-header
+               h5.modal-title Add New Product 
+               button.btn-close(type="button" data-bs-dismiss="modal", aria-label="Close")
+               .modal-body
+                  form
+                  .mb-3
+                     label.form-label(for="ProductName") Name
+                     input.form-control#productName(type="text")
+                  .mb-3
+                     label.form-label(for="qty") Name
+                     input.form-control#qty(type="number")
+                  .mb-3.form-check
+                     label.form-label(for="price") Name
+                     input.form-control#price(type="number")
+                  .mb-3.form-check
+                     label.form-label(for="mangData") Name
+                     input.form-control#mangData(type="date")
+                  div.text-center
+                  button.btn.btn-primary#saveNewProductBtn(type="button") Submit
+                  button.btn.btn-danger.mx-2(type="reset") Reset 
+        section.row.bordered-bottom.bordered-2 
+         section.col-11.m-auto.d-flex.justify.content-between.py-2
+           p.h4.mb-0 Welcome #{JSON.stringify(login.user.email)}
+           a.btn.btn-danger.btn-sm(href='/logout') Logout 
+        section.row 
+           section.col-10.m.auto 
+             p.h4.mb-0.t-center.text-primary  Product List
+             button.btn.bth.primary.btn.sm.mb-2(data-bd-toggle="model" data-bs-target="#addNewProduct") + ADD
+
+              table.table.table-border.mt-4
+               thead
+                  tr
+                  th(width ="5%") Sr.NO
+                  th(width ="55%") Name
+                  th(width ="30%") Cost
+                  th(width ="30%") Quantity
+                  td(width= "20%") Action
+               tbody#body
+                 
+step 18: 
+BasicRouter.delete("api/remove-product/:id", BasicController.removeProduct)
+
+ async removeProduct(request, response){
+            let {id} = request.params
+            try {
+                let result = await ProductModel.findOneAndDelete(id);
+                response.json({status: true, message:"removed"});
+            } catch (error) {
+                response.json({status: false, message:"Server error 404!"})
+            }
+        },
+
+      --> product.client.js
+      .join("");
+    AddRemoveButtonEvent();
+   }
+   //My removing the 
+  function AddRemoveButtonEvent(){
+    let removeBtn = document.querySelectorAll(".remove");
+    removeBtn.forEach((button)=>{
+        button.addEventListener("click",()=>{
+            let {removeId} = button.dataset;
+            removeProdeuct(removeId);
+        })
+    })
+  }
+  --> Here we will get a specific id for the data after that accouring to url-id the data will get removed
+
+   // On pressing on delete button will remove that item
+    async function removeProdeuct(){
+       let url = `localhost:3031/api/get-product/${id}`; we have url + id
+       let response = await fetch(url,{method:"DELETE"}) delete method is called
+       let data = await response.json(); data that is json will get removed
+       if(data.status === true){
+        getProductDetail(); the produt data is called and then delete
+      }else{
+          alert(data.message);
+      }
+   }
+   getProductDetail();
+
+step 20: now for adding product manually
+
+ ---> product.client.js
+     saveNewProductBtn.addEventListener('click',()=>{
+        let newProduct = {
+        productName: document.querySelector('#productName').value,
+        qty: document.querySelector('#qty').value,
+        price: document.querySelector('#price').value,
+        mangDate: document.querySelector('#mangData').value,
+        };
+
+    })
+    product will get add, prefer all id and classes form dashborad.pug file in this code
+
+step 21 at end product.client file will we like this
+       
+
+        window.addEventListener("load",()=>{
+            //store data in list
+            let list = [];
+            let saveNewProductBtn = document.querySelector('#saveNewProductBtn')
+
+            saveNewProductBtn.addEventListener('click', () => {
+                let newProduct = {
+                producyName:document.querySelector('#productName').value,
+                qty:document.querySelector('#qty').value,
+                price:document.querySelector('#price').value,
+                mangDate:document.querySelector('#mangDate').value,
+            }
+                console.log(newProduct);
+            })
+            // get all porduct data from api
+            async function getProductDetail(){
+                const data = await fetch("http://localhost:3031/api/get-product", {
+            method: "GET",
+            });
+            const product = await data.json();
+
+            // check status of product
+            if (product.status === true) {
+            list = product.result;
+            printData(list);
+            } else {
+            console.log(error.message);
+            }
+        //         let url = `localhost:3031/api/get-product`;
+        //         let response = await fetch(url,{method:"GET"});
+        //         let data = await response.json();
+        //         if(data.status === true){
+        //           list= data.result;
+        //           printData(list);
+        //         }else{
+        //             alert(data.message);
+        //         }
+        }
+
+        //this is the extention to upper function 
+        function printData(list){
+            let tbody = document.querySelector("#tbody");
+            tbody.innerHTML =list
+            .map((product,index)=>{
+                return `<tr>
+                        <th scope="row">${index+1}</th>
+                        <td>${product.productName}</td>
+                        <td>RS ${product.qty}</td>
+                        <td>${product.price} units</td>
+                        <td><button data-remove-id="
+                        ${product._id}"
+                        class="removebtn btn btn-danger"><i class="bi bi-trash3"></i></button>
+                            <button class="editBtn btn btn-danger"><i class="bi bi-pencil-square"></i></button>
+                            </div>
+                        </td>
+                        </tr>
+                    `;
+            })
+            .join("");
+            AddRemoveButtonEvent();
+        }
+        //remove data using button
+        function AddRemoveButtonEvent(){
+            let removeBtn = document.querySelectorAll(".removebtn");
+            removeBtn.forEach((button)=>{
+                button.addEventListener("click", ()=>{
+                    let { removeId } = button.dataset;
+                    removeProdeuct(removeId);
+                })
+            })
+        }
+
+        // On pressing on delete button will remove that item
+            async function removeProdeuct(id){
+            let url = `localhost:3031/api/get-product/${id}`;
+            console.log(url);
+            let response = await fetch(url,{method:"DELETE"});
+            let data = await response.json();
+            if(data.status === true){
+                alert(response.message)
+                getProductDetail();
+            }else{
+                alert(data.message);
+            }
+        }
+        getProductDetail();
+        });        
+
+        {now we can check in cinsole that product is added or not but we haven't done actuel adding of product }
+
+step 22: gain some cahnages in code at main.js
+
+         
+window.addEventListener("load", function () {
+  // store data in list
+  let list = [];
+  let saveNewProductBtn = document.querySelector('#saveNewProductBtn');
+
+  //adding product in todo list
+  saveNewProductBtn.addEventListener('click', async() =>{
+    let newProduct = {
+      //saveNewProduct: form 
+      name: document.querySelector('#productName').value,
+      Qty: document.querySelector('#qty').value,
+      price: document.querySelector('#price').value,
+      mfgDate: document.querySelector('#mfgDate').value,
+    };
+    //console.log(newProduct);
+    let url = `http://localhost:3031/api/saveNewproduct`;
+     let option = {
+      method : "POST",
+          //Post method has different method for that go to mdn fetch post website.
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify(newProduct),
+    };
+    try {
+      let response = await fetch(url,option);
+      let data = await response.json();
+      if(data.status === true){
+        let isToAddNew = confirm(
+          data.message + ",do you want to add product?"
+        );
+          if(isToAddNew){
+            document.querySelector('#productName').value=
+            document.querySelector('#qty').value=
+            document.querySelector('#price').value=
+            document.querySelector('#mfgDate').value="";
+          }else{
+            window.location.reload();
+          }
+      } else{
+        alert(data.message)
+      }
+      getAllData();
+    } catch (error) {
+      console.log(error)
+    }
+    
+  });
+
+  // ! get all product data form api
+  async function getAllData() {
+    const data = await fetch("http://localhost:3031/api/getProduct", {
+      method: "GET",
+    });
+    const product = await data.json();
+
+    // check status of product
+    if (product.status === true) {
+      list = product.result;
+      printData(list);
+    } else {
+      console.log(error.message);
+    }
+  }
+
+  // ! print data form dashboaed
+  const printData = (list) => {
+    let tbody = document.querySelector("#tbody");
+    tbody.innerHTML = list
+      .map((product, index) => {
+        return `<tr>
+      <th scope="row">${index + 1}</th>
+      <td>${product.name}</td>
+      <td>${product.Qty}</td>
+      <td>${product.price}</td>
+      <td>${product.mfgDate}</td>
+      <td>
+        <div>
+        <button data-remove-id="${
+          product._id
+        }" class="removebtn btn btn-danger"><i class="bi bi-trash3"></i></button>
+        <button class="editBtn btn btn-danger"><i class="bi bi-pencil-square"></i></button>
+        </div>
+      </td>
+      </tr>
+      `;
+      })
+      .join("");
+
+    // ! remove data using button
+    const removebtn = document.querySelectorAll(".removebtn");
+    removebtn.forEach((button) => {
+      button.addEventListener("click", () => {
+        const { removeId } = button.dataset;
+        removeProduct(removeId);
+      });
+    });
+  };
+  // ! if check peoduct data delet or not
+  async function removeProduct(id) {
+    const URL = `http://localhost:3031/api/getProduct/${id}`;
+    console.log(URL);
+    const data = await fetch(URL, {
+      method: "DELETE",
+    });
+
+    const respons = await data.json();
+
+    if (respons.status === true) {
+      alert(respons.message);
+      getAllData();
+    } else {
+      console.log(error.message);
+    }
+  }
+  // ! call the data function
+  getAllData();
+});
